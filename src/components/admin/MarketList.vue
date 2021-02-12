@@ -49,7 +49,7 @@ export default {
     },
   },
   created() {
-    this.$rbank.eventualMarkets
+    this.$controller.eventualMarkets
       .then((mkts) => {
         this.markets = mkts;
         this.markets.forEach((market) => market.eventualEvents

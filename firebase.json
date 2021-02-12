@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "target": "trubank-testnet",
     "public": "dist",
     "ignore": [
       "firebase.json",

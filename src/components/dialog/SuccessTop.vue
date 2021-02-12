@@ -46,7 +46,7 @@ export default {
     },
   },
   created() {
-    this.$rbank.controller.eventualMarketPrice(this.data.market.address)
+    this.$controller.eventualMarketPrice(this.data.market.address)
       .then((marketPrice) => {
         this.price = marketPrice;
         return this.data.market.eventualBorrowRate;

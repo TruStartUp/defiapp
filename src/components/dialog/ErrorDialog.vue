@@ -1,7 +1,7 @@
 <template>
   <div class="error-dialog">
     <v-row class="my-5 pb-5 d-flex justify-center">
-      <h2 class="text-center">RBank</h2>
+      <h2 class="text-center">TruBank</h2>
     </v-row>
     <v-row class="ma-0 py-5 d-flex justify-center">
       <v-icon color="#EB5757" x-large fab>error_outline</v-icon>

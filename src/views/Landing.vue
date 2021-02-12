@@ -10,7 +10,7 @@
         </v-row>
         <v-row class="d-flex align-start">
           <v-btn class="ma-0 button" rounded color="#008CFF" @click="toMyActivity">
-            Go to RBank Ðapp</v-btn>
+            Go to TruBank Ðapp</v-btn>
         </v-row>
       </v-col>
       <v-col cols="6" class="d-flex justify-center align-center">
@@ -34,7 +34,7 @@
         </v-row>
         <v-row class="d-flex flex-row-reverse">
           <v-btn class="ma-0 button" rounded color="#008CFF" @click="toMyActivity">
-           Explore the RBank Ðapp
+            Explore the TruBank Ðapp
           </v-btn>
         </v-row>
       </v-col>
@@ -119,7 +119,7 @@
         </v-row>
         <v-row class="d-flex justify-center">
           <v-btn class="button" rounded color="#008CFF" @click="toMyActivity">
-            Join Rbank Today
+            Join TruBank Today
           </v-btn>
         </v-row>
       </v-col>
@@ -130,7 +130,7 @@
     <v-row class="d-flex align-center">
       <v-col cols="6">
         <v-row class="text-left">
-          <h3>Build your own DeFi App with our RBank Library for Developers</h3>
+          <h3>Build your own DeFi App with our TruBank Library for Developers</h3>
         </v-row>
         <v-row class="text-left">
           We have created a comprehensible library for the upcoming DeFi Developer.
@@ -138,7 +138,7 @@
         </v-row>
         <v-row>
           <v-btn class="ma-0 button" rounded color="#008CFF" @click="toMyActivity">
-            Visit RBank Library
+            Visit TruBank Library
           </v-btn>
         </v-row>
       </v-col>

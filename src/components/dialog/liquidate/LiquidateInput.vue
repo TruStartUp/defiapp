@@ -122,6 +122,7 @@
 import { mapState } from 'vuex';
 import LiquidateList from '@/components/dialog/liquidate/LiquidateList.vue';
 import Loader from '@/components/common/Loader.vue';
+import Market from '@/handlers/market';
 
 export default {
   name: 'LiquidateInput',
@@ -165,7 +166,7 @@ export default {
     liquidate() {
       this.waiting = true;
       this.$emit('wait');
-      const market = new this.$rbank.Market(this.borrowMarketAddress);
+      const market = new Market(this.borrowMarketAddress);
       market.liquidateBorrow(
         this.liquidationAccount,
         this.collateralAmount * (10 ** this.borrowMarketTokenDecimals),
@@ -192,11 +193,11 @@ export default {
     setLiquidationAccount(accountObject) {
       this.borrowMarketAddress = accountObject.borrowMarketAddress;
       this.getCollateralToken()
-        .then(() => this.$rbank.controller.eventualMarketPrice(this.borrowMarketAddress))
+        .then(() => this.$controller.eventualMarketPrice(this.borrowMarketAddress))
         .then((price) => {
           this.borrowMarketPrice = price;
           this.accountDebt = accountObject.debt * price;
-          return this.$rbank.controller.eventualMarketPrice(this.data.market.address);
+          return this.$controller.eventualMarketPrice(this.data.market.address);
         })
         .then((price) => {
           this.currentMarketPrice = price;
@@ -210,7 +211,7 @@ export default {
     },
     getCollateralToken() {
       return new Promise((resolve, reject) => {
-        new this.$rbank.Market(this.borrowMarketAddress).eventualToken
+        new Market(this.borrowMarketAddress).eventualToken
           .then((token) => Promise.all([token.eventualSymbol, token.eventualDecimals,
             token.eventualBalanceOf(this.account)]))
           .then(([symbol, decimals, balance]) => {

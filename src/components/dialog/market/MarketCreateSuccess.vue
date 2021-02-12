@@ -48,6 +48,8 @@
 </template>
 
 <script>
+import Market from '@/handlers/market';
+
 export default {
   name: 'MarketCreateSuccess',
   props: {
@@ -84,7 +86,7 @@ export default {
     },
   },
   created() {
-    const market = new this.$rbank.Market(this.marketAddress);
+    const market = new Market(this.marketAddress);
     market.eventualToken
       .then((token) => token.eventualSymbol)
       .then((tokenSymbol) => {
@@ -93,7 +95,7 @@ export default {
       })
       .then((borrowRate) => {
         this.borrowRate = borrowRate;
-        return this.$rbank.controller.eventualMarketPrice(this.marketAddress);
+        return this.$controller.eventualMarketPrice(this.marketAddress);
       })
       .then((marketPrice) => {
         this.price = marketPrice;

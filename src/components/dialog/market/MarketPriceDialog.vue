@@ -92,7 +92,7 @@ export default {
     },
     setPrice() {
       this.waiting = true;
-      this.$rbank.controller.setMarketPrice(this.data.market.address, this.newPrice)
+      this.$controller.setMarketPrice(this.data.market.address, this.newPrice)
         .then(() => {
           this.waiting = false;
           this.success = true;
@@ -111,7 +111,7 @@ export default {
     ErrorDialog,
   },
   created() {
-    this.$rbank.controller.eventualMarketPrice(this.data.market.address)
+    this.$controller.eventualMarketPrice(this.data.market.address)
       .then((marketPrice) => {
         this.price = marketPrice;
       });

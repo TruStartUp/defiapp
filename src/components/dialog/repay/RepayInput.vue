@@ -26,8 +26,8 @@
               <v-col cols="5"/>
             </v-row>
           </v-col>
-          <v-col cols="1"/>
           <v-col cols="2"/>
+          <v-col cols="1"/>
         </v-row>
         <v-row class="d-flex align-center">
           <v-col cols="2"/>
@@ -37,19 +37,45 @@
           <v-col cols="4">
             <v-row class="ma-0 d-flex align-center">
               <v-col cols="7" class="d-flex justify-center">
-                <h1>{{ borrowBy | formatToken(data.token.decimals) }}</h1>
+                <template v-if="$options.filters
+                  .formatToken(borrowBy, data.token.decimals).toString().length > 6">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <h1 v-bind="attrs" v-on="on">
+                        {{ borrowBy | formatToken(data.token.decimals) }}
+                      </h1>
+                    </template>
+                    <span>{{ borrowBy | fullToken(data.token.decimals) }}</span>
+                  </v-tooltip>
+                </template>
+                <template v-else>
+                  <h1>{{ borrowBy | formatToken(data.token.decimals) }}</h1>
+                </template>
               </v-col>
               <v-col cols="5" class="itemInfo">
-                <span class="text-center" v-if="borrowBalanceInfo">
-                  (-{{ borrowBalanceInfo | formatToken(data.token.decimals) }})
-                </span>
+                <template v-if="$options.filters
+                  .formatToken(borrowBalanceInfo, data.token.decimals).toString().length > 6">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <span class="text-center" v-if="borrowBalanceInfo" v-bind="attrs" v-on="on">
+                        (-{{ borrowBalanceInfo | formatToken(data.token.decimals) }})
+                      </span>
+                    </template>
+                    <span>{{ borrowBalanceInfo | fullToken(data.token.decimals) }}</span>
+                  </v-tooltip>
+                </template>
+                <template v-else>
+                  <span class="text-center" v-if="borrowBalanceInfo">
+                    (-{{ borrowBalanceInfo | formatToken(data.token.decimals) }})
+                  </span>
+                </template>
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="1">
+          <v-col cols="2">
             <span class="itemInfo">{{ data.token.symbol }}</span>
           </v-col>
-          <v-col cols="2"/>
+          <v-col cols="1"/>
         </v-row>
         <v-row class="d-flex align-center">
           <v-col cols="2"/>
@@ -59,19 +85,45 @@
           <v-col cols="4">
             <v-row class="ma-0 d-flex align-center">
               <v-col cols="7" class="d-flex justify-center">
-                <h1>{{ maxBorrowAllowed | formatToken(data.token.decimals) }}</h1>
+                <template v-if="$options.filters
+                  .formatToken(maxBorrowAllowed, data.token.decimals).toString().length > 6">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <h1 v-bind="attrs" v-on="on">
+                        {{ maxBorrowAllowed | formatToken(data.token.decimals) }}
+                      </h1>
+                    </template>
+                    <span>{{ maxBorrowAllowed | fullToken(data.token.decimals) }}</span>
+                  </v-tooltip>
+                </template>
+                <template v-else>
+                  <h1>{{ maxBorrowAllowed | formatToken(data.token.decimals) }}</h1>
+                </template>
               </v-col>
               <v-col cols="5" class="itemInfo">
-                <span class="text-center" v-if="borrowLimitInfo">
-                  (+{{ borrowLimitInfo | formatToken(data.token.decimals) }})
-                </span>
+                <template v-if="$options.filters
+                  .formatToken(borrowLimitInfo, data.token.decimals).toString().length > 6">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <span class="text-center" v-if="borrowLimitInfo" v-bind="attrs" v-on="on">
+                        (+{{ borrowLimitInfo | formatToken(data.token.decimals) }})
+                      </span>
+                    </template>
+                    <span>{{ borrowLimitInfo | fullToken(data.token.decimals) }}</span>
+                  </v-tooltip>
+                </template>
+                <template v-else>
+                  <span class="text-center" v-if="borrowLimitInfo">
+                    (+{{ borrowLimitInfo | formatToken(data.token.decimals) }})
+                  </span>
+                </template>
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="1">
+          <v-col cols="2">
             <span class="itemInfo">{{ data.token.symbol }}</span>
           </v-col>
-          <v-col cols="2"/>
+          <v-col cols="1"/>
         </v-row>
       </div>
       <v-row class="my-5 d-flex justify-center">
@@ -206,7 +258,7 @@ export default {
         .then((borrowBy) => {
           this.oldBorrowBy = borrowBy;
           this.borrowBy = borrowBy - Number(this.contractAmount);
-          return this.$rbank.controller.getAccountLiquidity(this.account);
+          return this.$controller.getAccountLiquidity(this.account);
         })
         .then((accountLiquidity) => {
           oldLiquidity = accountLiquidity;
@@ -215,7 +267,7 @@ export default {
         .then((cash) => {
           oldCash = cash;
           this.cash = cash + Number(this.contractAmount);
-          return this.$rbank.controller.getAccountValues(this.account);
+          return this.$controller.getAccountValues(this.account);
         })
         .then(({ supplyValue, borrowValue }) => {
           const newBorrowValue = ((borrowValue - (Number(this.contractAmount) * this.price)) * (this
@@ -249,7 +301,7 @@ export default {
       .then((borrowBy) => {
         this.oldBorrowBy = borrowBy;
         this.borrowBy = borrowBy;
-        return this.$rbank.controller.getAccountLiquidity(this.account);
+        return this.$controller.getAccountLiquidity(this.account);
       })
       .then((accountLiquidity) => {
         this.liquidity = accountLiquidity;
@@ -261,7 +313,7 @@ export default {
       })
       .then((borrowRate) => {
         this.borrowRate = borrowRate;
-        return this.$rbank.controller.eventualMarketPrice(this.data.market.address);
+        return this.$controller.eventualMarketPrice(this.data.market.address);
       })
       .then((marketPrice) => {
         this.price = marketPrice;
@@ -270,15 +322,15 @@ export default {
       .then((tok) => tok.eventualBalanceOf(this.account))
       .then((tokenBalance) => {
         this.tokenBalance = tokenBalance;
-        return this.$rbank.controller.getAccountHealth(this.account);
+        return this.$controller.getAccountHealth(this.account);
       })
       .then((accountHealth) => {
         this.accountHealth = accountHealth;
-        return this.$rbank.controller.eventualMantissa;
+        return this.$controller.eventualMantissa;
       })
       .then((mantissa) => {
         this.mantissa = mantissa;
-        return this.$rbank.controller.eventualCollateralFactor;
+        return this.$controller.eventualCollateralFactor;
       })
       .then((collateralFactor) => {
         this.collateralFactor = collateralFactor * this.mantissa;

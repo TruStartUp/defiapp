@@ -22,15 +22,8 @@ export default {
       return `${this.layout.toLowerCase()}-layout`;
     },
   },
-  methods: {
-
-  },
   components: {
     BaseLayout,
-  },
-  created() {
-    const ctrl = process.env.VUE_APP_RBANK_CONTROLLER;
-    this.$rbank.controller = ctrl.toLowerCase();
   },
 };
 </script>

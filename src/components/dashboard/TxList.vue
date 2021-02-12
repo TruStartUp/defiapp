@@ -165,14 +165,14 @@ export default {
         });
     },
     getTransactions() {
-      this.$rbank.eventualMarkets
+      this.$controller.eventualMarkets
         .then((markets) => {
           markets.forEach((market) => {
             market.eventualToken
               .then((token) => Promise.all([
                 token.eventualSymbol,
                 market.eventualDeployBlock,
-                this.$rbank.controller.eventualMarketPrice(market.address),
+                this.$controller.eventualMarketPrice(market.address),
                 market.eventualBorrowRate,
                 token.eventualDecimals,
               ]))

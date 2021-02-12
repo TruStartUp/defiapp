@@ -115,7 +115,7 @@ export default {
     },
     getChartData(period) {
       this.period = period;
-      this.$rbank.controller.getOverallBalance(this.account, period)
+      this.$controller.getOverallBalance(this.account, period)
         .then((overallBalance) => overallBalance
           .map(([date, balance]) => [
             this.mapTimeToLabel(period, date),
