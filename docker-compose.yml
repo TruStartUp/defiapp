@@ -2,7 +2,7 @@ version: '3'
 services:
   dapp:
     build: .
-    container_name: rbank-dapp
+    container_name: trubank-dapp
     ports:
       - "80:80"
       - "443:443"

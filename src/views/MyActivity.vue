@@ -174,12 +174,12 @@ export default {
     TxList,
   },
   created() {
-    this.$rbank.controller.getAccountValues(this.account)
+    this.$controller.getAccountValues(this.account)
       .then(({ supplyValue, borrowValue }) => {
         this.totalBorrowed = borrowValue;
         this.totalSupplied = supplyValue;
         this.totalBalance = this.totalSupplied - this.totalBorrowed;
-        return this.$rbank.controller.getAccountHealth(this.account);
+        return this.$controller.getAccountHealth(this.account);
       })
       .then((health) => {
         this.healthFactor = health > 1 ? 100 : health * 100;

@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     reset() {
-      this.$rbank.controller.getAccountHealth(this.account)
+      this.$controller.getAccountHealth(this.account)
         .then((accountHealth) => {
           this.accountHealth = accountHealth;
         });
@@ -79,7 +79,7 @@ export default {
     BorrowList,
   },
   created() {
-    this.$rbank.controller.getAccountHealth(this.account)
+    this.$controller.getAccountHealth(this.account)
       .then((accountHealth) => {
         this.accountHealth = accountHealth;
       });

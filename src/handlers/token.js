@@ -3,8 +3,8 @@ import TokenContract from '@/contracts/FaucetToken.json';
 
 export default class Token {
   constructor(address = '') {
-    this.internalAddress = address.toLowerCase();
-    if (!this.address.match(/0x[a-f0-9]{40}/)) return new Error('Missing token address');
+    this.internalAddress = address;// TODO .toLowerCase();
+    if (!this.address.match(/0x[a-fA-F0-9]{40}/)) return new Error('Missing token address');
     this.instance = new web3.eth.Contract(TokenContract.abi, this.address);
   }
 

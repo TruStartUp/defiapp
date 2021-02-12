@@ -1,6 +1,6 @@
 <template>
   <v-app-bar class="appBar ma-5" color="transparent" flat>
-    <h1 class="mx-5">RBank</h1>
+    <h1 class="mx-5">TruBank</h1>
     <h2>{{ title }}</h2>
     <v-spacer/>
     <div v-if="isLogged">

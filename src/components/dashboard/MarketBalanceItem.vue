@@ -22,6 +22,7 @@
 <script>
 import { mapState } from 'vuex';
 import rifImage from '@/assets/rif.png';
+import Market from '@/handlers/market';
 
 export default {
   name: 'MarketBalanceItem',
@@ -58,7 +59,7 @@ export default {
     },
   },
   created() {
-    this.market = new this.$rbank.Market(this.marketAddress);
+    this.market = new Market(this.marketAddress);
     this.market.token
       .then((tok) => [tok.eventualName, tok.eventualSymbol, tok.eventualDecimals])
       .then((results) => Promise.all(results))
@@ -66,7 +67,7 @@ export default {
         this.token.name = name;
         this.token.symbol = symbol;
         this.token.decimals = decimals;
-        return this.$rbank.controller.eventualMarketPrice(this.marketAddress);
+        return this.$controller.eventualMarketPrice(this.marketAddress);
       })
       .then((marketPrice) => {
         this.price = marketPrice;

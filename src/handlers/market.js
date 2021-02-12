@@ -21,25 +21,25 @@ export default class Market {
    * @param {object} config of the network { chainId: WEB_SOCKETS_PROVIDER }
    * @return {Error}
    */
-  constructor(address = '', config = {
-    1337: {
-      httpProvider: 'http://127.0.0.1:8545',
-      wsProvider: 'ws://127.0.0.1:8545',
-    },
-  }) {
-    this.instanceAddress = address.toLowerCase();
-    if (!this.address.match(/0x[a-f0-9]{40}/)) return new Error('Missing address');
+  constructor(address = '') {
+    this.config = {
+      [process.env.VUE_APP_NETWORK_ID]: {
+        httpProvider: process.env.VUE_APP_HTTP_PROVIDER,
+        wsProvider: process.env.VUE_APP_WS_PROVIDER,
+      },
+    };
+    this.instanceAddress = address; // TODO .toLowerCase();
+    if (!this.address.match(/0x[a-fA-F0-9]{40}/)) return new Error('Missing address');
     this.instance = new web3.eth.Contract(MarketContract.abi, address);
     this.eventualWeb3WS = web3.eth.getChainId()
       .then((chainId) => new Web3(new Web3
-        .providers.WebsocketProvider(config[chainId].wsProvider)))
+        .providers.WebsocketProvider(this.config[chainId].wsProvider)))
       .catch(() => new Error('Something went wrong with the web3 instance over web sockets on Market'));
     this.eventualWeb3Http = web3.eth.getChainId()
       .then((chainId) => new Web3(new Web3
-        .providers.HttpProvider(config[chainId].httpProvider)))
+        .providers.HttpProvider(this.config[chainId].httpProvider)))
       .catch(() => new Error('Something went wrong with the web3 instance over http on Market'));
-    this.token = this.instance.methods.token()
-      .call()
+    this.instanceToken = this.instance.methods.token().call()
       .then((tokenAddress) => new Token(tokenAddress));
   }
 
@@ -56,7 +56,7 @@ export default class Market {
    * @return {Token} this market instance token.
    */
   get token() {
-    return this.token;
+    return this.instanceToken;
   }
 
   /**
@@ -208,7 +208,7 @@ export default class Market {
    * @return {Promise<Token>}
    */
   get eventualToken() {
-    return this.token;
+    return this.instanceToken;
   }
 
   /**
@@ -374,7 +374,7 @@ export default class Market {
    */
   supply(amount, from = '') {
     return new Promise((resolve, reject) => {
-      this.token
+      this.instanceToken
         .then((token) => token.approve(this.instanceAddress, amount, from))
         .then(() => send(this.instance.methods.supply(amount), from))
         .then(resolve)
@@ -407,7 +407,7 @@ export default class Market {
    */
   payBorrow(amount, from = '') {
     return new Promise((resolve, reject) => {
-      this.token
+      this.instanceToken
         .then((token) => token.approve(this.instanceAddress, amount, from))
         .then(() => send(this.instance.methods.payBorrow(amount), from))
         .then(resolve)
@@ -530,7 +530,7 @@ export default class Market {
    */
   liquidateBorrow(borrower, amount, collateralMarket, from = '') {
     return new Promise((resolve, reject) => {
-      this.token
+      this.instanceToken
         .then((token) => token.approve(this.instanceAddress, amount, from))
         .then(() => send(this.instance.methods.liquidateBorrow(
           borrower,

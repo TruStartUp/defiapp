@@ -1,4 +1,5 @@
 import ControllerContract from '@/contracts/Controller.json';
+import Market from '@/handlers/market';
 import { send, web3 } from '@/handlers';
 import * as constants from '@/store/constants';
 import _ from 'lodash';
@@ -15,8 +16,8 @@ export default class Controller {
    * @return {Error}
    */
   constructor(address = '') {
-    this.instanceAddress = address.toLowerCase();
-    if (!this.address.match(/0x[a-f0-9]{40}/)) return new Error('Missing address');
+    this.instanceAddress = address; // TODO .toLowerCase();
+    if (!this.address.match(/0x[a-fA-F0-9]{40}/)) return new Error('Missing address');
     this.instance = new web3.eth.Contract(ControllerContract.abi, address);
   }
 
@@ -260,7 +261,9 @@ export default class Controller {
    */
   setMarketPrice(marketAddress, marketPrice) {
     return new Promise((resolve, reject) => {
-      send(this.instance.methods.setPrice(marketAddress, marketPrice))
+      this.eventualMantissa
+        .then((mantissa) => send(this.instance.methods
+          .setPrice(marketAddress, Number(marketPrice) * Number(mantissa))))
         .then(resolve)
         .catch(reject);
     });
@@ -277,7 +280,7 @@ export default class Controller {
         this.eventualMantissa,
         this.instance.methods.prices(marketAddress).call(),
       ])
-        .then(([mantissa, price]) => Number(price) / mantissa)
+        .then(([mantissa, price]) => Number(price) / Number(mantissa))
         .then(resolve)
         .catch(reject);
     });
@@ -402,6 +405,82 @@ export default class Controller {
         })
         .then(resolve)
         .catch(reject);
+    });
+  }
+
+  /**
+   * Returns the list of existing markets.
+   * @return {Promise<[Market]>}
+   */
+  markets() {
+    const config = {
+      [process.env.VUE_APP_NETWORK_ID]: {
+        httpProvider: process.env.VUE_APP_HTTP_PROVIDER,
+        wsProvider: process.env.VUE_APP_WS_PROVIDER,
+      },
+    };
+    return this.eventualMarketListSize
+      .then((marketListSize) => _.range(marketListSize))
+      .then((marketIdxs) => marketIdxs
+        .map((marketIdx) => this.getEventualMarketAddress(marketIdx)))
+      .then((eventualMarketAddresses) => Promise.all(eventualMarketAddresses))
+      .then((marketAddresses) => marketAddresses
+        .map((marketAddress) => new Market(marketAddress, config)));
+  }
+
+  /**
+   * Returns the eventual market instances that are registered in the specified controller.
+   * @return {Promise<[Market]>} eventual array of market instances.
+   */
+  get eventualMarkets() {
+    return this.markets();
+  }
+
+  /**
+   * Gets an eventual instance of the specified market either by its position in the market list or
+   * by its on chain deployed market address.
+   * @param {string|number} id either the position in the market list array or its on chain deployed
+   * market address.
+   * @return {Promise<Market>} eventual market instance
+   */
+  eventualMarket(id) {
+    return new Promise((resolve, reject) => {
+      if (typeof id === 'string') {
+        this.markets()
+          .then((markets) => markets.filter((market) => market.address === id)
+            .pop())
+          .then((result) => {
+            if (result === undefined) {
+              throw new Error('There is no market with that address');
+            }
+            return result;
+          })
+          .then(resolve)
+          .catch(reject);
+      }
+      return this.markets()
+        .then((markets) => markets[id])
+        .then((result) => {
+          if (result === undefined) {
+            throw new Error('There is no market at this index');
+          }
+          return result;
+        })
+        .then(resolve)
+        .catch(reject);
+    });
+  }
+
+  /**
+   * Returns if the market with the given token address already exists.
+   * @param tokenAddress
+   * @return {Promise<boolean>}
+   */
+  marketExistsByToken(tokenAddress) {
+    return new Promise((resolve) => {
+      this.getEventualMarketAddressByToken(tokenAddress)
+        .then(() => resolve(true))
+        .catch(() => resolve(false));
     });
   }
 

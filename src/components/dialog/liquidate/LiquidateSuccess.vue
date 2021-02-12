@@ -107,7 +107,7 @@ export default {
       .then((tok) => tok.eventualBalanceOf(this.account))
       .then((tokenBalance) => {
         this.tokenBalance = tokenBalance;
-        return this.$rbank.controller.getAccountLiquidity(this.account);
+        return this.$controller.getAccountLiquidity(this.account);
       })
       .then((accountLiquidity) => {
         this.liquidity = accountLiquidity;
@@ -115,7 +115,7 @@ export default {
       })
       .then((cash) => {
         this.cash = cash;
-        return this.$rbank.controller.eventualMarketPrice(this.data.market.address);
+        return this.$controller.eventualMarketPrice(this.data.market.address);
       })
       .then((marketPrice) => {
         this.price = marketPrice;

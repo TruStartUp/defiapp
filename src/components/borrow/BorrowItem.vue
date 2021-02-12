@@ -30,7 +30,22 @@
           <v-row class="ma-0">
             <v-col cols="9" class="pa-0 d-flex align-center">
               <v-list-item-subtitle class="item">
-                {{ cash | formatToken(token.decimals) }}
+                <template v-if="$options.filters
+                  .formatToken(cash, token.decimals).toString().length > 6">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <span class="d-flex align-center" v-bind="attrs" v-on="on">
+                        {{ cash | formatToken(token.decimals) }}
+                      </span>
+                    </template>
+                    <span>{{ cash | fullToken(token.decimals) }}</span>
+                  </v-tooltip>
+                </template>
+                <template v-else>
+                  <span class="d-flex align-center">
+                    {{ cash | formatToken(token.decimals) }}
+                  </span>
+                </template>
               </v-list-item-subtitle>
             </v-col>
             <v-col cols="3" class="pa-0">
@@ -94,7 +109,7 @@ export default {
   methods: {
     reset() {
       this.dialog = false;
-      this.$rbank.controller.eventualMarketPrice(this.market.address)
+      this.$controller.eventualMarketPrice(this.market.address)
         .then((marketPrice) => {
           this.price = marketPrice;
           return this.market.eventualBorrowRate;
@@ -108,6 +123,13 @@ export default {
         });
       this.$emit('dialogClosed');
     },
+    handleEvent(error, event) {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log(event);
+      }
+    },
   },
   components: {
     BorrowDialog,
@@ -118,8 +140,11 @@ export default {
   created() {
     this.market.eventualEvents
       .then((events) => {
-        events.allEvents()
+        const allEventsEmitter = events.allEvents(this.handleEvent);
+        allEventsEmitter
           .on('data', this.reset);
+        allEventsEmitter
+          .on('error', (error) => console.error(error));
       });
     this.market.eventualToken
       .then((tok) => [
@@ -132,7 +157,7 @@ export default {
         this.token.name = name;
         this.token.symbol = symbol;
         this.token.decimals = decimals;
-        return this.$rbank.controller.eventualMarketPrice(this.market.address);
+        return this.$controller.eventualMarketPrice(this.market.address);
       })
       .then((marketPrice) => {
         this.price = marketPrice;

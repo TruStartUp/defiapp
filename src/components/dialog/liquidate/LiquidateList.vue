@@ -48,6 +48,7 @@
 <script>
 import { mapState } from 'vuex';
 import LiquidateItem from '@/components/dialog/liquidate/LiquidateItem.vue';
+import Market from '@/handlers/market';
 
 export default {
   name: 'LiquidateList.vue',
@@ -97,13 +98,13 @@ export default {
           return uniqueBorrows;
         })
         .then((borrows) => Promise.all([Promise.all(borrows
-          .map((borrow) => this.$rbank.controller.getAccountHealth(borrow.borrower))), borrows]))
+          .map((borrow) => this.$controller.getAccountHealth(borrow.borrower))), borrows]))
         .then(([accountsHealth, borrows]) => borrows
           .map((borrow, idx) => ({ health: accountsHealth[idx], ...borrow }))
           .filter((borrow) => borrow.health <= 0))
         .then((borrows) => Promise.all([
           borrows,
-          Promise.all(borrows.map((borrow) => new this.$rbank.Market(borrow.borrowMarketAddress)
+          Promise.all(borrows.map((borrow) => new Market(borrow.borrowMarketAddress)
             .updatedBorrowBy(borrow.borrower))),
           Promise.all(borrows.map((borrow) => this.data.market.updatedSupplyOf(borrow.borrower))),
         ]))
@@ -115,7 +116,7 @@ export default {
           })).forEach((borrow) => this.borrows.push(borrow)));
     },
     getBorrows() {
-      this.$rbank.eventualMarkets
+      this.$controller.eventualMarkets
         .then((markets) => markets.filter((market) => market.address !== this.data.market.address))
         .then((markets) => markets
           .forEach((market) => this.getUnhealthyAccounts(market)));

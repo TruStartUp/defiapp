@@ -2,4 +2,14 @@
   "projects": {
     "default": "rbank-test"
   }
+  "targets": {
+      "rbank-test": {
+        "hosting": {
+          "app": [
+            "trubank-testnet"
+          ]
+        }
+      }
+    }
+
 }

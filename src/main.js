@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Rbank from '@rsksmart/rbank';
+import Controller from '@/handlers/controller';
 import App from './App.vue';
 import './registerServiceWorker';
 import router from './router';
@@ -12,12 +12,9 @@ import './styles/main.scss';
 require('./filters');
 
 Vue.config.productionTip = false;
-// eslint-disable-next-line no-multi-assign
-Vue.prototype.$rbank = Vue.rbank = new Rbank(
-  {
-    [process.env.VUE_APP_NETWORK_ID]: process.env.VUE_APP_WS_PROVIDER,
-  },
-);
+Vue.prototype.$controller = new Controller(process.env.VUE_APP_TRUBANK_CONTROLLER);
+Vue.controller = Vue.prototype.$controller;
+
 new Vue({
   router,
   store,

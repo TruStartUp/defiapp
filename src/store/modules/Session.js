@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import * as constants from '@/store/constants';
 import store from '@/store';
+import { web3 } from '@/handlers';
 
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', () => {
@@ -17,10 +18,10 @@ const state = {
 const actions = {
   // eslint-disable-next-line no-shadow
   [constants.SESSION_CONNECT_WEB3]: ({ commit, state }) => {
-    Vue.rbank.web3.eth.getAccounts()
+    web3.eth.getAccounts()
       .then(([account]) => {
         commit(constants.SESSION_SET_PROPERTY, { account });
-        return Vue.rbank.controller.eventualOwner;
+        return Vue.controller.eventualOwner;
       })
       .then((owner) => {
         commit(constants.SESSION_SET_PROPERTY, { isOwner: owner === state.account });

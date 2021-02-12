@@ -21,7 +21,7 @@
         <v-row class="ma-0">
           <v-col>
             <v-text-field class="d-flex align-start" v-model="marketPrice" type="number" solo flat
-                      :rules="[rules.requiredMarketPrice]"/>
+                          :rules="[rules.requiredMarketPrice]"/>
           </v-col>
           <v-col cols="1" class="mb-4 mr-2 dataInfo d-flex justify-end">
             USD
@@ -92,6 +92,8 @@
 </template>
 
 <script>
+import Market from '@/handlers/market';
+
 export default {
   name: 'MarketCreateInput',
   data() {
@@ -140,7 +142,7 @@ export default {
       this.marketExists = false;
     },
     async checkMarketExistence() {
-      await this.$rbank.marketExistsByToken(this.tokenAddress)
+      await this.$controller.marketExistsByToken(this.tokenAddress)
         .then((marketExists) => {
           this.marketExists = marketExists;
         });
@@ -150,7 +152,7 @@ export default {
       if (!this.marketExists) {
         let marketAddress;
         this.$emit('wait');
-        await this.$rbank.Market.create(
+        await Market.create(
           this.tokenAddress,
           this.baseBorrowApr,
           this.blocksPerYear,
@@ -158,14 +160,15 @@ export default {
         )
           .then((createdMarketAddress) => {
             marketAddress = createdMarketAddress;
-            return new this.$rbank.Market(createdMarketAddress);
+            return new Market(createdMarketAddress);
           })
-          .then((market) => market
-            .setControllerAddress(this.$rbank.controller.address))
-          .then(() => this.$rbank.controller.addMarket(marketAddress))
-          .then(() => this.$rbank.controller
+          .then((market) => market.setControllerAddress(this.$controller.address))
+          .then(() => this.$controller.addMarket(marketAddress))
+          .then(() => this.$controller
             .setMarketPrice(marketAddress, this.marketPrice))
-          .then(() => this.$emit('created', { marketAddress }))
+          .then(() => {
+            this.$emit('created', { marketAddress });
+          })
           .catch(() => {
             this.$emit('error');
           });

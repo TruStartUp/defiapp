@@ -28,7 +28,7 @@ export default {
     MarketBalanceItem,
   },
   created() {
-    this.$rbank.eventualMarkets
+    this.$controller.eventualMarkets
       .then((mkts) => {
         this.marketAddresses = mkts.map((mkt) => mkt.address);
       });
